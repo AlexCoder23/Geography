@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoLearn • Модуль</title>
+    <title>Geography • Модуль</title>
 
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="lesson.css">
@@ -237,11 +237,6 @@ function saveProgress(progress) {
 
 
 
-
-/* ============================================================
-   Проверка завершённости
-   ============================================================ */
-
 function isLessonCompleted(id) {
 
     const progress = getProgress();
@@ -299,10 +294,6 @@ async function loadLesson(id) {
     }
 }
 
-
-/* ============================================================
-   Sidebar
-   ============================================================ */
 
 function updateSidebar() {
 
@@ -371,10 +362,6 @@ function updateSidebar() {
 }
 
 
-/* ============================================================
-   Клики по sidebar
-   ============================================================ */
-
 function setupSidebar() {
 
     const items =
@@ -405,10 +392,6 @@ function setupSidebar() {
 
 }
 
-
-/* ============================================================
-   Правая панель прогресса
-   ============================================================ */
 
 function updateProgressPanel() {
 
@@ -497,10 +480,6 @@ let dragStartX = 0;
 let dragStartY = 0;
 
 
-/* ============================================================
-   Открытие карты
-   ============================================================ */
-
 async function openWorldMap(
     countries = [],
     title = "Карта"
@@ -527,12 +506,6 @@ async function openWorldMap(
     resetMap();
 
     highlightCountries(countries);
-
-
-    /*
-     * После открытия modal SVG уже имеет
-     * правильные размеры.
-     */
 
     requestAnimationFrame(() => {
 
@@ -583,11 +556,6 @@ async function loadWorldMap() {
 
     }
 
-
-    /*
-     * Получаем исходный viewBox.
-     */
-
     const viewBox =
         mapSVG.viewBox.baseVal;
 
@@ -607,31 +575,15 @@ async function loadWorldMap() {
         ...mapOriginalViewBox
     };
 
-
-    /*
-     * SVG должен занимать весь viewport.
-     */
-
     mapSVG.setAttribute(
         "preserveAspectRatio",
         "xMidYMid meet"
     );
 
-
-    /*
-     * На всякий случай запрещаем
-     * стандартное drag-поведение.
-     */
-
     mapSVG.setAttribute(
         "draggable",
         "false"
     );
-
-
-    /*
-     * Обработчики стран.
-     */
 
     mapSVG
         .querySelectorAll("path")
@@ -640,13 +592,6 @@ async function loadWorldMap() {
             path.addEventListener(
                 "click",
                 event => {
-
-                    /*
-                     * Если пользователь только
-                     * двигал карту — не считаем
-                     * это кликом.
-                     */
-
                     if (
                         Math.abs(
                             event.clientX -
@@ -659,8 +604,7 @@ async function loadWorldMap() {
                     ) {
                         return;
                     }
-
-
+                    
                     console.log(
                         path.id,
                         path.getAttribute("title")
@@ -670,25 +614,15 @@ async function loadWorldMap() {
             );
 
         });
-
-
+    
     applyViewBox();
-
 }
 
 
-function highlightCountries(
-    countries
-) {
-
+function highlightCountries(countries) {
     if (!mapSVG) {
         return;
     }
-
-
-    /*
-     * Убираем старую подсветку.
-     */
 
     mapSVG
         .querySelectorAll(
@@ -705,11 +639,6 @@ function highlightCountries(
             }
         );
 
-
-    /*
-     * Подсвечиваем новые страны.
-     */
-
     countries.forEach(
         (countryId, index) => {
 
@@ -718,7 +647,6 @@ function highlightCountries(
                     `#${countryId}`
                 );
 
-
             if (!country) {
 
                 console.warn(
@@ -726,22 +654,16 @@ function highlightCountries(
                 );
 
                 return;
-
             }
 
-
             if (index === 0) {
-
                 country.classList.add(
                     "country-highlight"
                 );
-
             } else {
-
                 country.classList.add(
                     "country-highlight-secondary"
                 );
-
             }
 
         }
@@ -751,28 +673,21 @@ function highlightCountries(
 
 
 function resetMap() {
-
     if (!mapOriginalViewBox) {
         return;
     }
-
-
     mapViewBox = {
         ...mapOriginalViewBox
     };
-
-
     applyViewBox();
 
 }
 
 
 function applyViewBox() {
-
     if (!mapSVG || !mapViewBox) {
         return;
     }
-
 
     mapSVG.setAttribute(
         "viewBox",
@@ -782,23 +697,18 @@ function applyViewBox() {
          ${mapViewBox.width}
          ${mapViewBox.height}`
     );
-
 }
 
 function fitMapToContainer() {
-
     if (!mapSVG) {
         return;
     }
-
 
     mapViewBox = {
         ...mapOriginalViewBox
     };
 
-
     applyViewBox();
-
 }
 
 function zoomMap(
@@ -811,21 +721,13 @@ function zoomMap(
         return;
     }
 
-
     const container =
         document.getElementById(
             "map-container"
         );
 
-
     const rect =
         container.getBoundingClientRect();
-
-
-    /*
-     * Если точка zoom не указана,
-     * используем центр карты.
-     */
 
     if (
         centerX === null ||
@@ -839,13 +741,6 @@ function zoomMap(
             rect.height / 2;
 
     }
-
-
-    /*
-     * Переводим координаты мыши
-     * из экранных координат
-     * в координаты SVG.
-     */
 
     const svgX =
         mapViewBox.x +
@@ -870,11 +765,6 @@ function zoomMap(
     const newHeight =
         mapViewBox.height * factor;
 
-
-    /*
-     * Не даём приблизить слишком сильно.
-     */
-
     const minWidth = 20;
 
     const maxWidth =
@@ -887,12 +777,6 @@ function zoomMap(
     ) {
         return;
     }
-
-
-    /*
-     * Сохраняем точку,
-     * над которой находится курсор.
-     */
 
     const ratioX =
         (
@@ -930,14 +814,12 @@ function zoomMap(
 
 
     applyViewBox();
-
 }
 
 const mapContainer =
     document.getElementById(
         "map-container"
     );
-
 
 mapContainer.addEventListener(
     "wheel",
@@ -1011,7 +893,6 @@ mapContainer.addEventListener(
         mapContainer.setPointerCapture(
             event.pointerId
         );
-
     }
 );
 
@@ -1028,11 +909,6 @@ mapContainer.addEventListener(
         const rect =
             mapContainer.getBoundingClientRect();
 
-
-        /*
-         * Сколько пикселей мы прошли.
-         */
-
         const dx =
             event.clientX -
             dragStartX;
@@ -1041,12 +917,6 @@ mapContainer.addEventListener(
         const dy =
             event.clientY -
             dragStartY;
-
-
-        /*
-         * Переводим пиксели
-         * в координаты SVG.
-         */
 
         const scaleX =
             mapStartViewBox.width /
@@ -1138,7 +1008,6 @@ document
 
 
 function closeWorldMap() {
-
     document
         .getElementById(
             "map-modal"
@@ -1146,7 +1015,6 @@ function closeWorldMap() {
         .classList.remove(
             "open"
         );
-
 }
 
 document.addEventListener(
@@ -1160,7 +1028,6 @@ document.addEventListener(
             closeWorldMap();
 
         }
-
     }
 );
 
