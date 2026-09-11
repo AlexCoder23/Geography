@@ -1,27 +1,3 @@
-
-/*
- * ============================================================
- * GeoLearn — тестирование
- * ============================================================
- *
- * URL:
- *
- * test.html?s=11
- *
- * где 11 — ID параграфа.
- *
- * Тест хранится:
- *
- * tests/11.json
- *
- * ============================================================
- */
-
-
-/* ============================================================
-   Состояние теста
-   ============================================================ */
-
 let quiz = null;
 
 let currentQuestion = 0;
@@ -31,11 +7,6 @@ let selectedAnswer = null;
 let score = 0;
 
 let answerChecked = false;
-
-
-/* ============================================================
-   Получение ID теста из URL
-   ============================================================ */
 
 function getTestId() {
 
@@ -69,11 +40,6 @@ function getTestId() {
     return id;
 
 }
-
-
-/* ============================================================
-   Загрузка JSON
-   ============================================================ */
 
 async function loadQuiz() {
 
@@ -120,11 +86,6 @@ async function loadQuiz() {
 
 }
 
-
-/* ============================================================
-   Инициализация
-   ============================================================ */
-
 function initializeQuiz() {
 
     if (
@@ -158,11 +119,6 @@ function initializeQuiz() {
 
 }
 
-
-/* ============================================================
-   Показ вопроса
-   ============================================================ */
-
 function showQuestion() {
 
     const question =
@@ -175,9 +131,6 @@ function showQuestion() {
 
     answerChecked = false;
 
-
-    /* ---------- счётчик ---------- */
-
     document.getElementById(
         "question-counter"
     ).innerHTML = `
@@ -188,9 +141,6 @@ function showQuestion() {
         <b>${quiz.questions.length}</b>
 
     `;
-
-
-    /* ---------- прогресс ---------- */
 
     const percent =
         Math.round(
@@ -205,16 +155,10 @@ function showQuestion() {
     ).style.width =
         `${percent}%`;
 
-
-    /* ---------- вопрос ---------- */
-
     document.getElementById(
         "question"
     ).textContent =
         question.question;
-
-
-    /* ---------- ответы ---------- */
 
     const answersContainer =
         document.getElementById(
@@ -276,9 +220,6 @@ function showQuestion() {
         }
     );
 
-
-    /* ---------- кнопка ---------- */
-
     const button =
         document.getElementById(
             "answer-button"
@@ -294,11 +235,6 @@ function showQuestion() {
     updateScore();
 
 }
-
-
-/* ============================================================
-   Выбор ответа
-   ============================================================ */
 
 function selectAnswer(index) {
 
@@ -352,11 +288,6 @@ function selectAnswer(index) {
 
 }
 
-
-/* ============================================================
-   Проверка ответа
-   ============================================================ */
-
 function checkAnswer() {
 
     if (
@@ -386,9 +317,6 @@ function checkAnswer() {
         document.querySelectorAll(
             ".answer"
         );
-
-
-    /* ---------- правильный ---------- */
 
     answers.forEach(
         answer => {
@@ -426,9 +354,6 @@ function checkAnswer() {
         }
     );
 
-
-    /* ---------- результат ---------- */
-
     if (
         selectedAnswer ===
         correctAnswer
@@ -465,11 +390,6 @@ function checkAnswer() {
 
 }
 
-
-/* ============================================================
-   Следующий вопрос
-   ============================================================ */
-
 function nextQuestion() {
 
     if (!answerChecked) {
@@ -497,11 +417,6 @@ function nextQuestion() {
     }
 
 }
-
-
-/* ============================================================
-   Завершение теста
-   ============================================================ */
 
 function finishQuiz() {
 
@@ -570,11 +485,6 @@ function finishQuiz() {
 
 }
 
-
-/* ============================================================
-   Сохранение результата
-   ============================================================ */
-
 function saveTestResult(
     lessonId,
     score,
@@ -620,9 +530,6 @@ function saveTestResult(
 
     }
 
-
-    /* ---------- сохраняем результат ---------- */
-
     progress.tests[lessonId] = {
 
         score: score,
@@ -636,12 +543,6 @@ function saveTestResult(
         date: new Date().toISOString()
 
     };
-
-
-    /*
-     * Параграф считается пройденным,
-     * если ученик набрал проходной балл.
-     */
 
     const passingScore =
         quiz.passing_score ?? 70;
@@ -663,13 +564,6 @@ function saveTestResult(
         JSON.stringify(progress)
     );
 
-
-    /*
-     * Если существует функция пересчёта
-     * прогресса модуля из lesson.js,
-     * вызываем её.
-     */
-
     if (
         typeof updateModuleProgress ===
         "function"
@@ -682,11 +576,6 @@ function saveTestResult(
     }
 
 }
-
-
-/* ============================================================
-   Повторить тест
-   ============================================================ */
 
 function retryQuiz() {
 
@@ -727,11 +616,6 @@ function retryQuiz() {
 
 }
 
-
-/* ============================================================
-   Ошибка
-   ============================================================ */
-
 function showError() {
 
     document.getElementById(
@@ -758,11 +642,6 @@ function showError() {
 
 }
 
-
-/* ============================================================
-   Счёт
-   ============================================================ */
-
 function updateScore() {
 
     document.getElementById(
@@ -771,11 +650,6 @@ function updateScore() {
         `${score} правильных`;
 
 }
-
-
-/* ============================================================
-   Обработчики
-   ============================================================ */
 
 document.addEventListener(
     "DOMContentLoaded",
