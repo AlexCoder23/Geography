@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GeoLearn • Тест</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="test.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="quiz-container">
+
+    <a class="back" id="back-link" href="#">
+        ← Вернуться к разделу
+    </a>
+
+
+    <div class="quiz-header">
+
+        <div id="question-counter">
+            Вопрос 1 из 2
+        </div>
+
+        <div id="quiz-score">
+            0 правильных
+        </div>
+
+    </div>
+
+
+    <div class="progress">
+
+        <div
+            class="fill"
+            id="quiz-progress"
+            style="width:0%"
+        ></div>
+
+    </div>
+
+
+    <div id="quiz-content">
+
+        <div class="question-card">
+
+            <span class="tag">
+                Вопрос
+            </span>
+
+            <h1 id="question">
+                Загрузка...
+            </h1>
+
+        </div>
+
+
+        <div
+            class="answers"
+            id="answers"
+        ></div>
+
+
+        <div class="actions">
+
+            <button
+                id="answer-button"
+                disabled
+            >
+                Ответить →
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- Результат теста -->
+
+    <div
+        id="result"
+        class="result-card"
+        style="display:none"
+    >
+
+        <div class="result-icon">
+            🎉
+        </div>
+
+        <h1>
+            Тест завершён!
+        </h1>
+
+        <p id="result-text"></p>
+
+        <div class="result-actions">
+
+            <button id="retry-button">
+                Пройти ещё раз
+            </button>
+
+            <button
+                id="lesson-button"
+                class="secondary-button"
+            >
+                Вернуться к параграфу
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="test.js"></script>
+
+</body>
+</html>

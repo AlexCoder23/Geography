@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoLearn</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<section class="hero">
+
+    <div class="hero-text">
+
+        <h1>
+            Изучайте географию<br>
+            современно
+        </h1>
+
+        <p>
+
+            Интерактивные модули, AI-пояснения
+            и тестирование после каждого раздела.
+
+        </p>
+
+        <button>
+            Начать обучение
+        </button>
+
+    </div>
+
+</section>
+
+
+<section class="modules">
+
+    <h2>Доступные модули</h2>
+
+    <div class="grid">
+
+        <div class="card" id="sel1">
+
+            <h3>
+                Демография населения мира
+            </h3>
+
+            <p>
+                Изучение процессов и структуры
+            </p>
+
+            <div class="progress">
+
+                <div class="fill" style="width:33%"></div>
+
+            </div>
+
+            <span>33%</span>
+
+        </div>
+
+
+        <div class="card" id="sel2">
+            <h3>
+                Миграционные процессы населения мира
+            </h3>
+
+            <p>
+                Факторы, виды
+            </p>
+
+            <div class="progress">
+
+                <div class="fill" style="width:20%"></div>
+
+            </div>
+
+            <span>20%</span>
+
+        </div>
+
+
+        <div class="card" id="sel3">
+            <h3>
+                Размещение населения мира
+            </h3>
+
+            <p>
+                Расселение, факторы, география
+            </p>
+
+            <div class="progress">
+
+                <div class="fill" style="width:0%"></div>
+
+            </div>
+
+            <span>0%</span>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+    let block1 = document.querySelector("#sel1");
+    block1.addEventListener("click", (e) => {
+        location.href = "./index1.html?s=11";
+    });
+    let block2 = document.querySelector("#sel2");
+    block2.addEventListener("click", (e) => {
+        location.href = "./index1.html?s=21";
+    });
+    let block3 = document.querySelector("#sel3");
+    block3.addEventListener("click", (e) => {
+        location.href = "./index1.html?s=31";
+    });
+</script>
+
+
+</body>
+</html>

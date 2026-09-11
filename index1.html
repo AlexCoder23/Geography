@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoLearn • Модуль</title>
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="lesson.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="lesson-layout">
+
+    <aside class="sidebar" id="s1">
+
+        <h3>ГЕОГРАФИЯ ДЕМОГРАФИЧЕСКИХ ПРОЦЕССОВ</h3>
+
+        <ul>
+
+            <li id="s11">Демографические процессы и их география</li>
+            <li id="s12">Половозрастная структура населения мира</li>
+            <li id="s13">Теория демографического перехода</li>
+
+        </ul>
+
+    </aside>
+
+    <aside class="sidebar" id="s2">
+
+        <h3>ГЕОГРАФИЯ МЕЖДУНАРОДНОЙ МИГРАЦИИ</h3>
+
+        <ul>
+
+            <li id="s21">Факторы и виды миграции населения</li>
+            <li id="s22">Международная миграция в современном мире</li>
+            <li id="s23">Беженство в современном мире</li>
+
+        </ul>
+
+    </aside>
+
+    <aside class="sidebar" id="s3">
+
+        <h3>ГЕОГРАФИЯ РАССЕЛЕНИЯ МИРА</h3>
+
+        <ul>
+
+            <li id="s31">Размещение населения мира</li>
+            <li id="s32">География расселения мира</li>
+
+        </ul>
+
+    </aside>
+
+
+    <main class="content">
+
+        <a href="./index.html" class="back">
+            ← Назад к модулям
+        </a>
+
+
+        <div id="lesson-content"> <div class="loading"> Загрузка параграфа... </div> </div>
+
+
+        <div class="lesson-footer">
+
+            <button id="gettest">
+                Пройти тест →
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <aside class="progress-panel">
+
+        <div class="progress-card">
+
+            <h3>Прогресс</h3>
+
+            <div class="progress">
+
+                <div class="fill" style="width:33%"></div>
+
+            </div>
+
+            <p>33%</p>
+
+        </div>
+
+        <div class="progress-card">
+
+            <h3>Следующий</h3>
+
+            <p>
+
+                Теория демографического перехода
+
+            </p>
+
+        </div>
+
+    </aside>
+
+</div>
+
+
+<div id="map-modal" class="map-modal">
+
+    <div class="map-window">
+
+        <div class="map-header">
+
+            <div class="map-title">
+                <span>🌍</span>
+                <strong id="map-country-name">Карта</strong>
+            </div>
+
+            <button class="map-close" id="map-close" style="color: black">
+                ×
+            </button>
+
+        </div>
+
+        <div class="map-content">
+
+            <div
+                class="map-container"
+                id="map-container"
+            >
+
+                <div
+                    class="map-viewport"
+                    id="map-viewport"
+                ></div>
+
+            </div>
+
+            <div class="map-controls">
+
+                <button id="map-zoom-in" style="color: black">+</button>
+                <button id="map-zoom-out" style="color: black">−</button>
+                <button id="map-reset" style="color: black">⌂</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+<script>
+
+function getLessonId() {
+
+    const params = new URLSearchParams(window.location.search);
+
+    const value = params.get("s");
+
+    if (!value) {
+        return 11;
+    }
+
+    const id = Number(value);
+
+    if (!Number.isInteger(id)) {
+        return 11;
+    }
+
+    return id;
+}
+
+
+
+const STORAGE_KEY = "progress";
+
+
+function getProgress() {
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (!saved) {
+
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                lessons: {},
+                modules: {}
+            })
+        );
+
+        return {
+            lessons: {},
+            modules: {}
+        };
+
+    }
+
+    try {
+
+        return JSON.parse(saved);
+
+    } catch (error) {
+
+        console.error(
+            "Не удалось прочитать прогресс:",
+            error
+        );
+
+        return {
+            lessons: {},
+            modules: {}
+        };
+
+    }
+
+}
+
+
+function saveProgress(progress) {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(progress)
+    );
+
+}
+
+
+
+
+/* ============================================================
+   Проверка завершённости
+   ============================================================ */
+
+function isLessonCompleted(id) {
+
+    const progress = getProgress();
+
+    return progress.lessons[id] === true;
+
+}
+
+
+async function loadLesson(id) {
+
+
+    const container =
+        document.getElementById(
+            "lesson-content"
+        );
+
+    try {
+
+        const response =
+            await fetch(
+                `./s/${id}.html`
+            );
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+
+        }
+
+
+        container.innerHTML = await response.text();
+
+        updateSidebar();
+        updateProgressPanel();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Ошибка загрузки теста:",
+            error
+        );
+
+
+        container.innerHTML = 'Error while loading lesson';
+
+        updateSidebar();
+        updateProgressPanel();
+
+    }
+}
+
+
+/* ============================================================
+   Sidebar
+   ============================================================ */
+
+function updateSidebar() {
+
+    const currentId = getLessonId();
+
+    const items =
+        document.querySelectorAll(
+            ".sidebar li"
+        );
+
+
+    items.forEach(item => {
+
+        const id =
+            Number(
+                item.id.replace("s", "")
+            );
+
+        item.classList.remove(
+            "active",
+            "done"
+        );
+
+
+        if (id === currentId) {
+
+            item.classList.add(
+                "active"
+            );
+
+            item.innerHTML =
+                `● ${item.innerHTML}`;
+
+            return;
+
+        }
+
+
+        if (isLessonCompleted(id)) {
+
+            item.classList.add(
+                "done"
+            );
+
+            item.innerHTML =
+                `✓ ${item.innerHTML}`;
+
+        }
+
+    });
+
+    const s1 = document.querySelector("#s1");
+    const s2 = document.querySelector("#s2");
+    const s3 = document.querySelector("#s3");
+    if(currentId > 30) {
+        s1.style = "display: none;";
+        s2.style = "display: none;";
+    } else if(currentId > 20) {
+        s1.style = "display: none;";
+        s3.style = "display: none;";
+    } else if(currentId > 10) {
+        s2.style = "display: none;";
+        s3.style = "display: none;";
+    }
+
+}
+
+
+/* ============================================================
+   Клики по sidebar
+   ============================================================ */
+
+function setupSidebar() {
+
+    const items =
+        document.querySelectorAll(
+            ".sidebar li"
+        );
+
+
+    items.forEach(item => {
+
+        item.addEventListener(
+            "click",
+            () => {
+
+                const id =
+                    item.id.replace(
+                        "s",
+                        ""
+                    );
+
+                window.location.href =
+                    `?s=${id}`;
+
+            }
+        );
+
+    });
+
+}
+
+
+/* ============================================================
+   Правая панель прогресса
+   ============================================================ */
+
+function updateProgressPanel() {
+
+    const currentId = getLessonId();
+
+
+
+    const progress =
+        getProgress();
+
+
+    const moduleProgress =
+        progress.modules[
+            currentId/10
+        ];
+
+
+    const percent =
+        moduleProgress
+            ? moduleProgress.percent
+            : 0;
+
+
+    const fill =
+        document.querySelector(
+            ".progress-panel .fill"
+        );
+
+
+    const percentText =
+        document.querySelector(
+            ".progress-panel .progress-card p"
+        );
+
+
+    if (fill) {
+
+        fill.style.width =
+            `${percent}%`;
+
+    }
+
+
+    if (percentText) {
+
+        percentText.textContent =
+            `${percent}%`;
+
+    }
+
+}
+
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        const id =
+            getLessonId();
+
+
+        loadLesson(id);
+
+        setupSidebar();
+
+        const testbtn = document.querySelector("#gettest");
+        testbtn.addEventListener('click', (e) => {
+            location.href = `./test.html?s=${id}`;
+        })
+    }
+);
+
+
+
+let mapSVG = null;
+
+let mapOriginalViewBox = null;
+
+let mapViewBox = null;
+
+let mapStartViewBox = null;
+
+let isDragging = false;
+
+let dragStartX = 0;
+let dragStartY = 0;
+
+
+/* ============================================================
+   Открытие карты
+   ============================================================ */
+
+async function openWorldMap(
+    countries = [],
+    title = "Карта"
+) {
+
+    const modal =
+        document.getElementById("map-modal");
+
+    const titleElement =
+        document.getElementById(
+            "map-country-name"
+        );
+
+    titleElement.textContent = title;
+
+    modal.classList.add("open");
+
+
+    if (!mapSVG) {
+        await loadWorldMap();
+    }
+
+
+    resetMap();
+
+    highlightCountries(countries);
+
+
+    /*
+     * После открытия modal SVG уже имеет
+     * правильные размеры.
+     */
+
+    requestAnimationFrame(() => {
+
+        fitMapToContainer();
+
+    });
+
+}
+
+async function loadWorldMap() {
+
+    const viewport =
+        document.getElementById(
+            "map-viewport"
+        );
+
+
+    const response =
+        await fetch("./world.svg");
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Не удалось загрузить world.svg"
+        );
+
+    }
+
+
+    const svgText =
+        await response.text();
+
+
+    viewport.innerHTML =
+        svgText;
+
+
+    mapSVG =
+        viewport.querySelector("svg");
+
+
+    if (!mapSVG) {
+
+        throw new Error(
+            "SVG не найден"
+        );
+
+    }
+
+
+    /*
+     * Получаем исходный viewBox.
+     */
+
+    const viewBox =
+        mapSVG.viewBox.baseVal;
+
+
+    mapOriginalViewBox = {
+
+        x: viewBox.x,
+        y: viewBox.y,
+
+        width: viewBox.width,
+        height: viewBox.height
+
+    };
+
+
+    mapViewBox = {
+        ...mapOriginalViewBox
+    };
+
+
+    /*
+     * SVG должен занимать весь viewport.
+     */
+
+    mapSVG.setAttribute(
+        "preserveAspectRatio",
+        "xMidYMid meet"
+    );
+
+
+    /*
+     * На всякий случай запрещаем
+     * стандартное drag-поведение.
+     */
+
+    mapSVG.setAttribute(
+        "draggable",
+        "false"
+    );
+
+
+    /*
+     * Обработчики стран.
+     */
+
+    mapSVG
+        .querySelectorAll("path")
+        .forEach(path => {
+
+            path.addEventListener(
+                "click",
+                event => {
+
+                    /*
+                     * Если пользователь только
+                     * двигал карту — не считаем
+                     * это кликом.
+                     */
+
+                    if (
+                        Math.abs(
+                            event.clientX -
+                            dragStartX
+                        ) > 5 ||
+                        Math.abs(
+                            event.clientY -
+                            dragStartY
+                        ) > 5
+                    ) {
+                        return;
+                    }
+
+
+                    console.log(
+                        path.id,
+                        path.getAttribute("title")
+                    );
+
+                }
+            );
+
+        });
+
+
+    applyViewBox();
+
+}
+
+
+function highlightCountries(
+    countries
+) {
+
+    if (!mapSVG) {
+        return;
+    }
+
+
+    /*
+     * Убираем старую подсветку.
+     */
+
+    mapSVG
+        .querySelectorAll(
+            ".country-highlight, .country-highlight-secondary"
+        )
+        .forEach(
+            path => {
+
+                path.classList.remove(
+                    "country-highlight",
+                    "country-highlight-secondary"
+                );
+
+            }
+        );
+
+
+    /*
+     * Подсвечиваем новые страны.
+     */
+
+    countries.forEach(
+        (countryId, index) => {
+
+            const country =
+                mapSVG.querySelector(
+                    `#${countryId}`
+                );
+
+
+            if (!country) {
+
+                console.warn(
+                    `Страна ${countryId} не найдена`
+                );
+
+                return;
+
+            }
+
+
+            if (index === 0) {
+
+                country.classList.add(
+                    "country-highlight"
+                );
+
+            } else {
+
+                country.classList.add(
+                    "country-highlight-secondary"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+function resetMap() {
+
+    if (!mapOriginalViewBox) {
+        return;
+    }
+
+
+    mapViewBox = {
+        ...mapOriginalViewBox
+    };
+
+
+    applyViewBox();
+
+}
+
+
+function applyViewBox() {
+
+    if (!mapSVG || !mapViewBox) {
+        return;
+    }
+
+
+    mapSVG.setAttribute(
+        "viewBox",
+
+        `${mapViewBox.x}
+         ${mapViewBox.y}
+         ${mapViewBox.width}
+         ${mapViewBox.height}`
+    );
+
+}
+
+function fitMapToContainer() {
+
+    if (!mapSVG) {
+        return;
+    }
+
+
+    mapViewBox = {
+        ...mapOriginalViewBox
+    };
+
+
+    applyViewBox();
+
+}
+
+function zoomMap(
+    factor,
+    centerX = null,
+    centerY = null
+) {
+
+    if (!mapSVG) {
+        return;
+    }
+
+
+    const container =
+        document.getElementById(
+            "map-container"
+        );
+
+
+    const rect =
+        container.getBoundingClientRect();
+
+
+    /*
+     * Если точка zoom не указана,
+     * используем центр карты.
+     */
+
+    if (
+        centerX === null ||
+        centerY === null
+    ) {
+
+        centerX =
+            rect.width / 2;
+
+        centerY =
+            rect.height / 2;
+
+    }
+
+
+    /*
+     * Переводим координаты мыши
+     * из экранных координат
+     * в координаты SVG.
+     */
+
+    const svgX =
+        mapViewBox.x +
+        (
+            centerX / rect.width
+        ) *
+        mapViewBox.width;
+
+
+    const svgY =
+        mapViewBox.y +
+        (
+            centerY / rect.height
+        ) *
+        mapViewBox.height;
+
+
+    const newWidth =
+        mapViewBox.width * factor;
+
+
+    const newHeight =
+        mapViewBox.height * factor;
+
+
+    /*
+     * Не даём приблизить слишком сильно.
+     */
+
+    const minWidth = 20;
+
+    const maxWidth =
+        mapOriginalViewBox.width;
+
+
+    if (
+        newWidth < minWidth ||
+        newWidth > maxWidth
+    ) {
+        return;
+    }
+
+
+    /*
+     * Сохраняем точку,
+     * над которой находится курсор.
+     */
+
+    const ratioX =
+        (
+            svgX -
+            mapViewBox.x
+        ) /
+        mapViewBox.width;
+
+
+    const ratioY =
+        (
+            svgY -
+            mapViewBox.y
+        ) /
+        mapViewBox.height;
+
+
+    mapViewBox.width =
+        newWidth;
+
+    mapViewBox.height =
+        newHeight;
+
+
+    mapViewBox.x =
+        svgX -
+        ratioX *
+        newWidth;
+
+
+    mapViewBox.y =
+        svgY -
+        ratioY *
+        newHeight;
+
+
+    applyViewBox();
+
+}
+
+const mapContainer =
+    document.getElementById(
+        "map-container"
+    );
+
+
+mapContainer.addEventListener(
+    "wheel",
+    event => {
+
+        event.preventDefault();
+
+
+        const rect =
+            mapContainer.getBoundingClientRect();
+
+
+        const x =
+            event.clientX -
+            rect.left;
+
+
+        const y =
+            event.clientY -
+            rect.top;
+
+
+        if (event.deltaY < 0) {
+
+            zoomMap(
+                0.8,
+                x,
+                y
+            );
+
+        } else {
+
+            zoomMap(
+                1.25,
+                x,
+                y
+            );
+
+        }
+
+    },
+    {
+        passive: false
+    }
+);
+
+mapContainer.addEventListener(
+    "pointerdown",
+    event => {
+
+        isDragging = true;
+
+
+        mapContainer.classList.add(
+            "dragging"
+        );
+
+
+        dragStartX =
+            event.clientX;
+
+        dragStartY =
+            event.clientY;
+
+
+        mapStartViewBox = {
+            ...mapViewBox
+        };
+
+
+        mapContainer.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+mapContainer.addEventListener(
+    "pointermove",
+    event => {
+
+        if (!isDragging) {
+            return;
+        }
+
+
+        const rect =
+            mapContainer.getBoundingClientRect();
+
+
+        /*
+         * Сколько пикселей мы прошли.
+         */
+
+        const dx =
+            event.clientX -
+            dragStartX;
+
+
+        const dy =
+            event.clientY -
+            dragStartY;
+
+
+        /*
+         * Переводим пиксели
+         * в координаты SVG.
+         */
+
+        const scaleX =
+            mapStartViewBox.width /
+            rect.width;
+
+
+        const scaleY =
+            mapStartViewBox.height /
+            rect.height;
+
+
+        mapViewBox.x =
+            mapStartViewBox.x -
+            dx * scaleX;
+
+
+        mapViewBox.y =
+            mapStartViewBox.y -
+            dy * scaleY;
+
+
+        applyViewBox();
+
+    }
+);
+
+
+mapContainer.addEventListener(
+    "pointerup",
+    event => {
+
+        isDragging = false;
+
+
+        mapContainer.classList.remove(
+            "dragging"
+        );
+
+
+        mapContainer.releasePointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+
+document
+    .getElementById("map-zoom-in")
+    .addEventListener(
+        "click",
+        () => {
+
+            zoomMap(1.25);
+
+        }
+    );
+
+
+document
+    .getElementById("map-zoom-out")
+    .addEventListener(
+        "click",
+        () => {
+
+            zoomMap(.8);
+
+        }
+    );
+
+
+document
+    .getElementById("map-reset")
+    .addEventListener(
+        "click",
+        () => {
+
+            resetMap();
+
+        }
+    );
+
+document
+    .getElementById("map-close")
+    .addEventListener(
+        "click",
+        closeWorldMap
+    );
+
+
+function closeWorldMap() {
+
+    document
+        .getElementById(
+            "map-modal"
+        )
+        .classList.remove(
+            "open"
+        );
+
+}
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeWorldMap();
+
+        }
+
+    }
+);
+
+</script>
+</html>
